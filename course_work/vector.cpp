@@ -15,6 +15,8 @@ double find_max(double[], int);
 
 double rnd_num(int, int);
 
+//double* new_sum_vector(double[], double[], int, int);
+
 
 int main() {
 	system("chcp 1251 > nul");
@@ -83,6 +85,9 @@ int find_index_element(double vector[], double element, int n) {
 		}
 	}
 }
+//double *new_sum_vector(double first[], double second[], int n, int k) {
+//	return 0.0;
+//}
 
 double find_max(double vector[], int n) {
 	double max = 0.0;
