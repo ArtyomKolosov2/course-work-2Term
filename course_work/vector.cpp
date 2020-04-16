@@ -9,7 +9,7 @@ char path_double[] = "number_double.dat";
 
 template <class T> void fill_vector(T [], int, int start = 0, int end = 100);
 
-template <class T> void print_vector(T[], int);
+template <class T> void print_vector(T[], int, char sep = ' ');
 
 template <class T> int find_index_element(T[], T, int);
 
@@ -39,7 +39,7 @@ int main() {
 	
 	srand(time(NULL));
 	
-	create_and_fill_file(path_double, 20);
+	create_and_fill_file(path_double, 10);
 
 	fstream infile(path_double, ios::binary | ios::in);
 
@@ -89,9 +89,19 @@ void fill_vector_from_file(fstream& infile, double* vector) {
 }
 
 void change_nums_to_zero(double* vector, int index, int n) {
-	for (int i = index + 1; i < n; i++) {
+	int i = 0,
+		st = index;
+	for (i = index+1; i < n; i++) {
 		vector[i] = 0;
 	}
+	for (int i = 0; i < n; i++) {
+		for (int j = i; j < n; j++) {
+			if (vector[i] && !vector[j]) {
+				swap(vector[i], vector[j]);
+			}
+		}
+	}
+	
 }
 
 int find_file_size(fstream& infile) {
@@ -111,9 +121,9 @@ double rnd_num(int start, int end) {
 	return ((double)start + rand() % end) / ((double)1 + rand() % (end / 4));
 }
 
-template <class T> void print_vector(T vector[], int n){
+template <class T> void print_vector(T vector[], int n, char sep){
 	for (int i = 0; i < n; i++) {
-		cout << fixed << setprecision(2) << vector[i] << " ";
+		cout << fixed << setprecision(2) << vector[i] << sep;
 	}
 	cout << "\n\n";
 }
@@ -152,7 +162,7 @@ template <class T, class V> double* divide_vectors(T first[], V second[], int n)
 template <class T, class V> double* multiply_vectors(T first[], V second[], int n) {
 	double* multi = new double[n] {};
 	for (int i = 0; i < n; i++) {
-		multi[i] = first[i] / second[i];
+		multi[i] = first[i] * second[i];
 	}
 	return multi;
 }
