@@ -12,46 +12,49 @@ const int nl = 10,
 		  nw = 30;
 
 
-struct list {
+struct text_list {
 	char str[nw]{};
 	unsigned int count = 0;
-	list* next = nullptr;
+	text_list* next = nullptr;
+
 };
 
-list* add_to_list(list*, int );
+text_list* add_to_list(text_list*, int );
 
-list* list_with_repetation(list*, int);
+text_list* list_with_repetation(text_list*, int);
 
-list* delete_last_element(list*);
+text_list* delete_last_element(text_list*);
 
 char* fill_from_file(fstream&);
 
-void print_list(list*);
+void print_list(text_list*);
 
-void delete_list(list*);
+void delete_list(text_list*);
 
-void find_element_by_index(list*, int);
+void find_element_by_index(text_list*, int);
 
-void count_each_word(list*);
+void count_each_word(text_list*);
 
-void fill_list_from_str(list*, char[]);
+void fill_list_from_str(text_list*, char[]);
 
-void add_info_to_file(list*, fstream&, char *);
+void add_info_to_file(text_list*, fstream&, char *);
 
-void add_info_to_file(list*, fstream&);
+void add_info_to_file(text_list*, fstream&);
 
-int find_list_element(list*, char*);
+int count_element_rep(text_list*, char*);
 
-int get_length(list*);
+int get_length(text_list*);
 
 bool isalpha_mod(char);
 
 bool ispunct_end(char);
 
+bool find_list_element(text_list*, char*);
+
 int main() {
 	system("chcp 1251 > nul");
 	bool flag = true;
-	list* beg = new list;
+	text_list* beg = new text_list;
 
 	fstream infile(path_in, ios::in);
 	if (!infile) {
@@ -70,14 +73,16 @@ int main() {
 
 	print_list(beg);
 
-	list* beg_rep = list_with_repetation(beg, word_num);
+	text_list* beg_rep = list_with_repetation(beg, word_num);
 
 	print_list(beg_rep);
 
 	fstream outfile(path_out, ios::out);
 
+	outfile << word_num << endl;
 	add_info_to_file(beg, outfile, text);
 	add_info_to_file(beg_rep, outfile);
+
 	outfile.close();
 
 	delete_list(beg);
@@ -99,9 +104,9 @@ char* fill_from_file(fstream& infile) {
 	infile.close();
 	return text;
 }
-list* add_to_list(list* beg, int k) {
-	list* pnew = new list;
-	list* point = beg;
+text_list* add_to_list(text_list* beg, int k) {
+	text_list* pnew = new text_list;
+	text_list* point = beg;
 	if (k == 0) {
 		pnew->next = beg;
 		beg = pnew;
@@ -117,12 +122,12 @@ list* add_to_list(list* beg, int k) {
 	return beg;
 }
 
-list* list_with_repetation(list* beg, int word_num) {
-	list *beg_rep = new list;
-	list* point = beg;
-	list* point_rep = beg_rep;
+text_list* list_with_repetation(text_list* beg, int word_num) {
+	text_list *beg_rep = new text_list;
+	text_list* point = beg;
+	text_list* point_rep = beg_rep;
 	while (point) {
-		if (point->count == word_num) {
+		if (point->count == word_num && !find_list_element(beg_rep, point->str)) {
 			strcpy_s(point_rep->str, point->str);
 			point_rep->count = point->count;
 			beg_rep = add_to_list(beg_rep, get_length(beg_rep));
@@ -136,9 +141,9 @@ list* list_with_repetation(list* beg, int word_num) {
 	return beg_rep;
 }
 
-list* delete_last_element(list* beg) {
-	list* point = beg;
-	list* del;
+text_list* delete_last_element(text_list* beg) {
+	text_list* point = beg;
+	text_list* del;
 	int k = get_length(beg) - 1;
 	int len = 0;
 	while (point) {
@@ -153,8 +158,8 @@ list* delete_last_element(list* beg) {
 	return beg;
 }
 
-void fill_list_from_str(list* beg, char text[]) {
-	list *point = beg;
+void fill_list_from_str(text_list* beg, char text[]) {
+	text_list *point = beg;
 	bool flag = true;
 	int index = 0;
 	for (int i = 0; text[i]; i++) {
@@ -175,8 +180,8 @@ void fill_list_from_str(list* beg, char text[]) {
 	point->str[index] = '\0';
 }
 
-void add_info_to_file(list* beg, fstream& outfile, char *text) {
-	list* point = beg;
+void add_info_to_file(text_list* beg, fstream& outfile, char *text) {
+	text_list* point = beg;
 	outfile << text << endl;
 	while (point) {
 		outfile << point->str << " " << point->count << endl;
@@ -184,8 +189,8 @@ void add_info_to_file(list* beg, fstream& outfile, char *text) {
 	}
 }
 
-void add_info_to_file(list* beg, fstream& outfile) {
-	list* point = beg;
+void add_info_to_file(text_list* beg, fstream& outfile) {
+	text_list* point = beg;
 	outfile << "\nСлова с повторением:\n";
 	while (point) {
 		outfile << point->str << " " << point->count << endl;
@@ -193,9 +198,9 @@ void add_info_to_file(list* beg, fstream& outfile) {
 	}
 }
 
-void delete_list(list* beg) {
-	list* point = beg;
-	list* del;
+void delete_list(text_list* beg) {
+	text_list* point = beg;
+	text_list* del;
 	while (point) {
 		del = point;
 		point = point->next;
@@ -204,8 +209,8 @@ void delete_list(list* beg) {
 	delete point;
 }
 
-int get_length(list* beg) {
-	list* point = beg;
+int get_length(text_list* beg) {
+	text_list* point = beg;
 	int length = 0;
 	while (point) {
 		
@@ -215,16 +220,16 @@ int get_length(list* beg) {
 	return length;
 }
 
-void count_each_word(list* beg) {
-	list* point = beg;
+void count_each_word(text_list* beg) {
+	text_list* point = beg;
 	while (point) {
-		point->count = find_list_element(beg, point->str);
+		point->count = count_element_rep(beg, point->str);
 		point = point->next;
 	}
 }
 
-void print_list(list* beg) {
-	list* point = beg;
+void print_list(text_list* beg) {
+	text_list* point = beg;
 	cout << "Содержимое списка:\n";
 	while (point) {
 		cout << point->str <<" "<<point->count << endl;
@@ -232,8 +237,8 @@ void print_list(list* beg) {
 	}
 }
 
-void find_element_by_index(list* beg, int index) {
-	list* point = beg;
+void find_element_by_index(text_list* beg, int index) {
+	text_list* point = beg;
 	int length = 0;
 	while (point) {
 		if (length == index) {
@@ -247,8 +252,8 @@ void find_element_by_index(list* beg, int index) {
 	cout << "Элемент не найден!\n";
 }
 
-int find_list_element(list* beg, char *str) {
-	list* point = beg;
+int count_element_rep(text_list* beg, char *str) {
+	text_list* point = beg;
 	int count = 0;
 	while (point) {
 		if (!strcmp(point->str, str)) {
@@ -259,18 +264,34 @@ int find_list_element(list* beg, char *str) {
 	return count;
 }
 
+bool find_list_element(text_list* beg, char* str) {
+	text_list* point = beg;
+	int count = 0;
+	bool result = false;
+	while (point) {
+		if (!strcmp(point->str, str)) {
+			result = true;
+			break;
+		}
+		point = point->next;
+	}
+	return result;
+}
+
 
 bool isalpha_mod(char c) {
-	return c >= 'а' && c <= 'я' || c >= 'А' && c <= 'Я'
+	return (c >= 'а' && c <= 'я') || (c >= 'А' && c <= 'Я')
 		|| c == 'ё' || c == 'Ё' || isalpha((unsigned char)c); 
 }
 
 bool ispunct_end(char c) {
-	char check_symb[] = "!?.";
+	char check_symb[] = "!.?";
+	bool result = false;
 	for (int i = 0; check_symb[i]; i++) {
 		if (check_symb[i] == (unsigned char)c) {
-			return true;
+			result = true;
+			break;
 		}
 	}
-	return false;
+	return result;
 }

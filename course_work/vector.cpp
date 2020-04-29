@@ -66,10 +66,18 @@ int main() {
 
 	print_vector(vector, n);
 	double x[5] = { 1,2,3,4,5 };
-	double *sum = sum_vectors(vector, x, 5);
-	print_vector(sum, 5);
-
-	delete[] sum;
+	double* (*F[4])(double[], double[], int) 
+	{
+		sum_vectors,
+		minus_vectors,
+		multiply_vectors,
+		divide_vectors,
+	};
+	for (int i = 0; i < 4; i++) {
+		double* sum = F[i](vector, x, 5);
+		print_vector(sum, 5);
+		delete[] sum;
+	}
 	delete[] vector;
 	return 0;
 }
