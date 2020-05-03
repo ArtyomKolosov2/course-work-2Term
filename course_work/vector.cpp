@@ -109,7 +109,6 @@ void change_nums_to_zero(double* vector, int index, int n) {
 			}
 		}
 	}
-	
 }
 
 int find_file_size(fstream& infile) {
