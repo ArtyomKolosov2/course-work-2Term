@@ -100,7 +100,7 @@ char* fill_string_from_file(fstream& infile) { // Функция чтения текста из файла
 		}
 		index++;
 	}
-	return text; // Возврат строки с текстом из файла
+	return text; // Возврат строку с текстом из файла
 }
 text_list* add_to_list(text_list* beg, int k) { // Функция добавления нового элемента в односвязный список
 	text_list* pnew = new text_list;
@@ -274,7 +274,6 @@ int count_element_rep(text_list* beg, char *str) { // Функция, возвращающая кол-
 
 bool find_list_element(text_list* beg, char* str) { // Функция, возвращающая результат поиска слова в списке
 	text_list* point = beg;
-	int count = 0;
 	bool result = false;
 	while (point) {
 		if (!strcmp(point->str, str)) { // Сравнение строк
