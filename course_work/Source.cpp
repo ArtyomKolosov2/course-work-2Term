@@ -93,7 +93,8 @@ int main() {
 			<< menu_end << " - Выйти из программы\n";
 
 		fool_protected_cin(command);
-		if (command == menu_file_mod) {
+		switch (command) {
+		case menu_file_mod :
 			cout << "Выберите режим работы с файлом:\n";
 			cout << "1 - Подготовленный файл\n";
 			cout << "2 - Создать новый файл\n";
@@ -113,8 +114,9 @@ int main() {
 				add_info_to_infile(path_in, nl, ns, nw);
 				infile.open(path_in, ios::in);
 			}
-		}
-		else if (command == menu_change_main_nums) {
+			break;
+			
+		case menu_change_main_nums:
 			cout << "Введите кол-во предложений:\n";
 			fool_protected_cin(nl);
 			cout << "Введите кол-во слов в предложении:\n";
@@ -123,53 +125,58 @@ int main() {
 			fool_protected_cin(nw);
 			max_size = nl * ns * nw;
 			cout << "Максимальное кол-во символов в тексте = " << max_size << endl;
-		}
-		//fstream infile(path_in, ios::in); // Открытие файлового потока
-		else if (command == menu_do_main_action) {
-			if (!infile.is_open()) {
-				cout << "File Error: Файл с текстом не найден!\n";
-				continue;
-			}
-			text_list* beg = initialize_list_object(nw); // Создание односвязного списка
-			char* num = new char[nw];
-			infile.getline(num, nw);
-			int word_num = atoi(num) ? word_num = atoi(num) : word_num = 1;
-			cout << word_num << endl;
-			char* text = fill_string_from_file(infile, max_size);
+			break;
 			
+			//fstream infile(path_in, ios::in); // Открытие файлового потока
+		case menu_do_main_action:
+			if (infile.is_open()) {
+				text_list* beg = initialize_list_object(nw); // Создание односвязного списка
+				char* num = new char[nw];
+				infile.getline(num, nw);
+				int word_num = atoi(num) ? word_num = atoi(num) : word_num = 1;
+				cout << word_num << endl;
+				char* text = fill_string_from_file(infile, max_size);
 
-			fill_list_from_str(beg, text);
 
-			count_each_word(beg);
+				fill_list_from_str(beg, text);
 
-			print_list(beg);
+				count_each_word(beg);
 
-			text_list* beg_rep = list_with_repetation(beg, word_num);
+				print_list(beg);
 
-			print_list(beg_rep);
+				text_list* beg_rep = list_with_repetation(beg, word_num);
 
-			fstream outfile(path_out, ios::out);
+				print_list(beg_rep);
 
-			outfile << "Кол-во повторений слов:" << word_num << endl;
-			add_info_to_outfile(beg, outfile, text);
-			add_info_to_outfile(beg_rep, outfile);
+				fstream outfile(path_out, ios::out);
 
-			infile.close();
-			outfile.close();
-			delete_list(beg);
-			delete_list(beg_rep);
-			delete[] num;
-			delete[] text;
-		}
-		else if (command == menu_show_inst) {
+				outfile << "Кол-во повторений слов:" << word_num << endl;
+				add_info_to_outfile(beg, outfile, text);
+				add_info_to_outfile(beg_rep, outfile);
+
+				infile.close();
+				outfile.close();
+				delete_list(beg);
+				delete_list(beg_rep);
+				delete[] num;
+				delete[] text;
+			}
+			else {
+				cout << "File Error: Файл с текстом не найден!\n";
+			}
+			break;
+		case menu_show_inst:
 			show_instruction();
-		}
-		else if (command == menu_end) {
+			break;
+		case menu_end:
 			work_flag = false;
 			infile.close();
+			break;
+		default:
+			cout << "Command Error: Неизветсная комманда!\n";
+			break;
 		}
 	}
-	
 	return 0;
 }
 char* fill_string_from_file(fstream& infile, int max_size) { // Функция чтения текста из файла
