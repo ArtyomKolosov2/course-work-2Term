@@ -3,16 +3,14 @@
 
 using namespace std;
 
-const char path_in[100] = "C:\\Users\\User\\myfile.txt", // Пути к файлам ввода и вывода
-		   path_out[100] = "C:\\Users\\User\\outfile.txt";
+char path_in[] = "C:\\Users\\User\\myfile.txt", // Пути к файлам ввода и вывода
+	 path_out[] = "C:\\Users\\User\\outfile.txt";
 
-const int nl = 10, // Константные переменные, содержащие данные о размере входного файла
-		  ns = 10,
-		  nw = 30;
-
+															
 
 struct text_list { // Реализация структуры, которая хранит слово и кол-во его повторов
-	char str[nw]{};
+	int size = 10;
+	char *str;
 	unsigned int count = 0;
 	text_list* next = nullptr; // Указатель на след. структуру 
 };
@@ -23,9 +21,15 @@ text_list* list_with_repetation(text_list*, int);
 
 text_list* delete_last_element(text_list*);
 
-char* fill_string_from_file(fstream&);
+text_list* initialize_list_object(int);
+
+char* fill_string_from_file(fstream&, int);
+
+void delete_element(text_list*);
 
 void print_list(text_list*);
+
+void show_instruction();
 
 void delete_list(text_list*);
 
@@ -39,6 +43,10 @@ void add_info_to_outfile(text_list*, fstream&, char *);
 
 void add_info_to_outfile(text_list*, fstream&);
 
+void add_info_to_infile(char*, int, int, int);
+
+void fool_protected_cin(int&);
+
 int count_element_rep(text_list*, char*);
 
 int get_length(text_list*);
@@ -51,19 +59,30 @@ bool find_list_element(text_list*, char*);
 
 int main() {
 	system("chcp 1251 > nul"); // Изменение кодировки консоли
-	
-	text_list* beg = new text_list; // Создание односвязного списка
-
+	show_instruction();
+	int nl = 0,
+		ns = 0,
+		nw = 0,
+		max_size = 0;
+	cout << "Введите кол-во предложений:\n";
+	fool_protected_cin(nl);
+	cout << "Введите кол-во слов в предложении:\n";
+	fool_protected_cin(ns);
+	cout << "Введите кол-во символов в слове:\n";
+	fool_protected_cin(nw);
+	max_size = nl * ns * nw;
+	add_info_to_infile(path_in, nl, ns, nw);
+	text_list* beg = initialize_list_object(nw); // Создание односвязного списка
 	fstream infile(path_in, ios::in); // Открытие файлового потока
 	if (!infile) {
 		cout << "Error: Файл не найден!\n";
 		return 1;
 	}
-	char num[nw];
+	char *num = new char[nw];
 	infile.getline(num, nw);
-	int word_num = atoi(num);
+	int word_num = atoi(num)? word_num = atoi(num) : word_num = 1;
 	cout << word_num << endl;
-	char *text = fill_string_from_file(infile);
+	char *text = fill_string_from_file(infile, max_size);
 	infile.close();
 
 	fill_list_from_str(beg, text);
@@ -86,24 +105,35 @@ int main() {
 
 	delete_list(beg);
 	delete_list(beg_rep);
+	delete[] num;
 	delete[] text;
 	return 0;
 }
-char* fill_string_from_file(fstream& infile) { // Функция чтения текста из файла
-	char* text = new char[nw * ns * nl]{};
+char* fill_string_from_file(fstream& infile, int max_size) { // Функция чтения текста из файла
+	
+	char* text = new char[max_size]{};
+	
 	int index = 0;
 	while (!infile.eof()) {
 		text[index] = infile.get();
 		if (ispunct_end(text[index])) { // Поиск символа прекращения чтения из файла (.!?)
-			text[index] = '\0'; // Добовляем нуль-символ в конец проч. строки
+			text[index] = '\0'; // Добавляем нуль-символ в конец проч. строки
 			break;
 		}
 		index++;
 	}
 	return text; // Возврат строку с текстом из файла
 }
+
+text_list* initialize_list_object(int size) {
+	text_list* object = new text_list;
+	object->size = size;
+	object->str = new char[size] {};
+	return object;
+}
+
 text_list* add_to_list(text_list* beg, int k) { // Функция добавления нового элемента в односвязный список
-	text_list* pnew = new text_list;
+	text_list* pnew = initialize_list_object(beg->size);
 	text_list* point = beg;
 	if (k == 0) {
 		pnew->next = beg;
@@ -118,19 +148,20 @@ text_list* add_to_list(text_list* beg, int k) { // Функция добавления нового эле
 		point->next = pnew;
 	}
 	else {
-		delete pnew; // Высвобождение незадейств. памяти
+		delete_element(pnew); // Высвобождение незадейств. памяти
 	}
 	return beg;
 }
 
 text_list* list_with_repetation(text_list* beg, int word_num) {
-	text_list *beg_rep = new text_list;
+	text_list *beg_rep = initialize_list_object(beg->size);
 	text_list* point = beg;
 	text_list* point_rep = beg_rep;
 	while (point) {
 		if (point->count == word_num && !find_list_element(beg_rep, point->str)) {
-			strcpy_s(point_rep->str, point->str);
+			strcpy_s(point_rep->str, point->size, point->str);
 			point_rep->count = point->count;
+			point_rep->size = point->size;
 			beg_rep = add_to_list(beg_rep, get_length(beg_rep));
 			point_rep = point_rep->next;
 		}
@@ -144,12 +175,11 @@ text_list* list_with_repetation(text_list* beg, int word_num) {
 
 text_list* delete_last_element(text_list* beg) { // Функция удаления последнего элемента из списка
 	text_list* point = beg;
-	text_list* del;
 	int k = get_length(beg) - 1;
 	int len = 0;
 	while (point) {
 		if (len + 1 == k) {
-			delete point->next;
+			delete_element(point->next);
 			point->next = nullptr;
 			break;
 		}
@@ -157,6 +187,56 @@ text_list* delete_last_element(text_list* beg) { // Функция удаления последнего 
 		point = point->next;
 	}
 	return beg;
+}
+void delete_element(text_list* beg) {
+	delete beg->str;
+	delete beg;
+}
+
+void show_instruction() {
+	cout << "Описание программы Quick Text Analytics\n"
+		<<"Программа используется для анализа текста, введённого пользователем\n"
+		<<"Пользователь вводит кол-во предложений, слов и размер этих слов в тексте\n"
+		<<"После получения текста происходит подсчёт каждого слова в тексте\n"
+		<<"Программа выводит слова, кол-во повторений которых в тексте равняется числу, ранее введённым пользователем\n"
+		<<"Результат работы выводится на экран консоли и записывается в отдельный файл\n";
+}
+
+void fool_protected_cin(int& var) {
+	bool correct_flag = true;
+	while (correct_flag)
+	{
+		cin >> var;
+		if (cin.fail())
+		{
+			cout << "Error: Ошибка ввода! Повторите ввод\n";
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			correct_flag = true;
+		}
+		else { 
+			correct_flag = false; 
+		}
+	}
+}
+
+void add_info_to_infile(char*, int nl, int ns, int nw) {
+	fstream infile(path_in, ios::out);
+	int num = 1;
+	cout << "Введите искомое кол-во повторений слов:\n";
+	fool_protected_cin(num);
+	infile << num << "\n";
+	int size = ns * nw;
+	char* data = new char[size]{};
+	cout << "В конце ввода поставьте символ конца предложения(.?!)\n";
+	cin.ignore();
+	for (int i = 0; i < nl; i++) {
+		cout << "Введите " << i + 1 << "-ое предложение:\n";
+		cin.getline(data, (size_t)ns * nw);
+		infile << data << "\n";
+	}
+	infile.close();
+	delete[] data;
 }
 
 void fill_list_from_str(text_list* beg, char text[]) {
@@ -193,7 +273,7 @@ void add_info_to_outfile(text_list* beg, fstream& outfile, char *text) { // Функ
 void add_info_to_outfile(text_list* beg, fstream& outfile) { // Функция добавления информации в выходной файл (эхо-печать)
 	text_list* point = beg;
 	outfile << "\nСлова с повторением:\n";
-	if (get_length(beg) == 1) { // Если список пуст, то записываем, что данных нет
+	if (get_length(beg) <= 1) { // Если список пуст, то записываем, что данных нет
 		outfile << "Н/Д\n";
 	}
 	else {
@@ -210,9 +290,8 @@ void delete_list(text_list* beg) { // Функция удаления списка
 	while (point) {
 		del = point; // Запоминаем пред. элемент списка
 		point = point->next; // Идём вперёд на след. элемент списка
-		delete del; // Удаляем прошлый элемент
+		delete_element(del); // Удаляем прошлый элемент
 	}
-	delete point;
 }
 
 void count_each_word(text_list* beg) { // Функция заносит кол-во повторений слов в список
@@ -227,7 +306,9 @@ void print_list(text_list* beg) { // Функция, выводящая список в консоль
 	text_list* point = beg;
 	cout << "Содержимое списка:\n";
 	while (point) {
-		cout << point->str << " " << point->count << endl; // Вывод слова и кол-ва его повторений
+		if (point->count != 0) {
+			cout << point->str << " - " << point->count << endl; // Вывод слова и кол-ва его повторений
+		}
 		point = point->next;
 	}
 }
@@ -236,7 +317,7 @@ void find_element_by_index(text_list* beg, int index) {
 	text_list* point = beg;
 	int length = 0;
 	while (point) {
-		if (!(length == index)) {
+		if (length != index) {
 			length++;
 			point = point->next;
 
@@ -292,7 +373,7 @@ bool isalpha_modifed(char c) { // Модифицированная функция isalpha() работающая 
 }
 
 bool ispunct_end(char c) { // Функция, сравнивает полученный символ с сиволами конца строки
-	char check_symb[] = "!.?";
+	char check_symb[] = ".!?";
 	bool result = false;
 	for (int i = 0; check_symb[i]; i++) {
 		if (check_symb[i] == (unsigned char)c) {

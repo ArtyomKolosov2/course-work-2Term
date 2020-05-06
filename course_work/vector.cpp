@@ -25,9 +25,11 @@ template <class T, class V> double* multiply_vectors(T[], V[], int);
 
 double rnd_num(int start = 1, int end = 100);
 
-void create_and_fill_file(char*, int);
+void create_and_fill_file_auto(char*, int);
 
-void fill_vector_from_file(fstream&, double*);
+void create_and_fill_file(char*);
+
+template <class T> void fill_vector_from_file(fstream&, T*);
 
 void change_nums_to_zero(double*, int, int);
 
@@ -39,7 +41,7 @@ int main() {
 	
 	srand(time(NULL));
 	
-	create_and_fill_file(path_double, 10);
+	create_and_fill_file(path_double);
 
 	fstream infile(path_double, ios::binary | ios::in);
 
@@ -82,7 +84,7 @@ int main() {
 	return 0;
 }
 
-void create_and_fill_file(char* path, int n) {
+void create_and_fill_file_auto(char* path, int n) {
 	fstream outfile(path, ios::binary | ios::out);
 	for (int i = 0; i < n; i++) {
 		double random = rnd_num();
@@ -90,15 +92,30 @@ void create_and_fill_file(char* path, int n) {
 	}
 	outfile.close();
 }
+void create_and_fill_file(char *path) {
+	cout << "¬ведите данные или exit дл€ выхода:\n";
+	fstream outfile(path, ios::binary | ios::out);
+	bool work_flag = true;
+	char data[50];
+	while (work_flag) {
+		cin.getline(data, 50);
+		if (atof(data)) {
+			double num = atof(data);
+			outfile.write((char*)&num, sizeof(double));
+		}
+		else if (!_strcmpi(data, "exit")) {
+			work_flag = false;
+		}
+	}
+}
 
-void fill_vector_from_file(fstream& infile, double* vector) {
+template <class T> void fill_vector_from_file(fstream& infile, T* vector) {
 	int i = 0;
-	while (!infile.read((char*)&vector[i], sizeof(double)).eof()) { i++; }
+	while (!infile.read((char*)&vector[i], sizeof(T)).eof()) { i++; }
 }
 
 void change_nums_to_zero(double* vector, int index, int n) {
-	int i = 0,
-		st = index;
+	int i = 0;
 	for (i = index+1; i < n; i++) {
 		vector[i] = 0;
 	}
