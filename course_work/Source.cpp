@@ -4,7 +4,7 @@
 using namespace std;
 
 char path_in[] = "myfile.txt", // Пути к файлам ввода и вывода
-	 path_out[] = "C:\\Users\\User\\outfile.txt";
+	 path_out[] = "outfile.txt";
 
 enum menu_keys {
 	menu_file_mod = 1,
@@ -12,6 +12,11 @@ enum menu_keys {
 	menu_do_main_action,
 	menu_show_inst,
 	menu_end
+};
+
+enum meni_file_mod_keys {
+	open_exceded = 1,
+	open_new
 };
 
 struct text_list { // Реализация структуры, которая хранит слово и кол-во его повторов
@@ -39,8 +44,6 @@ void show_instruction();
 
 void delete_list(text_list*);
 
-void find_element_by_index(text_list*, int);
-
 void count_each_word(text_list*);
 
 void fill_list_from_str(text_list*, char[]);
@@ -54,6 +57,8 @@ void add_info_to_outfile(text_list*, fstream&);
 void add_info_to_infile(char*, int, int, int);
 
 void fool_protected_cin(int&);
+
+void fool_protected_getline(char*, int);
 
 int count_element_rep(text_list*, char*);
 
@@ -80,13 +85,15 @@ int main() {
 	fool_protected_cin(ns);
 	cout << "Введите кол-во символов в слове:\n";
 	fool_protected_cin(nw);
+	
 	max_size = nl * ns * nw;
+	nw++;
 	cout << "Максимальное кол-во символов в тексте = " << max_size << endl;
-	fstream infile;
+	fstream infile; // Открытие файлового потока
 	while (work_flag) {
 		int command = 0;
-		cout << "Введите комманду:\n"
-			<< menu_file_mod << " - Выбрать режим работы с файлом\n"
+		cout << "Введите команду:\n"
+			<< menu_file_mod << " - Выбрать файл\n"
 			<< menu_change_main_nums << " - Изменить кол-во предложений, слов и максимальный размер слова\n"
 			<< menu_do_main_action << " - Произвести работу с текстом\n"
 			<< menu_show_inst << " - Вывести в консоль описание программы\n"
@@ -95,28 +102,33 @@ int main() {
 		fool_protected_cin(command);
 		switch (command) {
 		case menu_file_mod :
-			cout << "Выберите режим работы с файлом:\n";
-			cout << "1 - Подготовленный файл\n";
-			cout << "2 - Создать новый файл\n";
+			system("cls");
+			cout << "Выберите режим работы с файлом:\n"
+				 << open_exceded << " - Подготовленный файл\n"
+				 << open_new << " - Создать новый файл\n";
 			fool_protected_cin(command);
-			if (command == 1) {
+			if (command == open_exceded) {
 				char path[100]{};
 				infile.open(path, ios::in);
 				cin.ignore();
 				while (!infile.is_open()) {
 					infile.close();
-					cout << "Введите корректный путь к вашему файлу:\n";
-					cin.getline(path, 100);
+					cout << "Введите корректный путь к вашему файлу или exit для выхода:\n";
+					fool_protected_getline(path, 100);
+					if (!_strcmpi(path, "exit")) {
+						break;
+					}
 					infile.open(path, ios::in);
 				}
 			}
-			else if (command == 2) {
+			else if (command == open_new) {
 				add_info_to_infile(path_in, nl, ns, nw);
-				infile.open(path_in, ios::in);
+				infile.open(path_in, ios::in); 
 			}
 			break;
 			
 		case menu_change_main_nums:
+			system("cls");
 			cout << "Введите кол-во предложений:\n";
 			fool_protected_cin(nl);
 			cout << "Введите кол-во слов в предложении:\n";
@@ -124,11 +136,12 @@ int main() {
 			cout << "Введите кол-во символов в слове:\n";
 			fool_protected_cin(nw);
 			max_size = nl * ns * nw;
+			nw++;
 			cout << "Максимальное кол-во символов в тексте = " << max_size << endl;
 			break;
 			
-			//fstream infile(path_in, ios::in); // Открытие файлового потока
 		case menu_do_main_action:
+			system("cls");
 			if (infile.is_open()) {
 				text_list* beg = initialize_list_object(nw); // Создание односвязного списка
 				char* num = new char[nw];
@@ -166,13 +179,16 @@ int main() {
 			}
 			break;
 		case menu_show_inst:
+			system("cls");
 			show_instruction();
 			break;
 		case menu_end:
 			work_flag = false;
+			cout << "До Встречи!\n";
 			infile.close();
 			break;
 		default:
+			system("cls");
 			cout << "Command Error: Неизветсная комманда!\n";
 			break;
 		}
@@ -278,6 +294,7 @@ void show_instruction() {
 	print_splitter('=', 100);
 	cout << "Описание программы Text Quick Analytics\n"
 		<<"Программа используется для анализа текста, введённого пользователем\n"
+		<<"Анализ текста заключается в подсчёте повторений каждого слова\n"
 		<<"Пользователь вводит кол-во предложений, слов и размер этих слов в тексте\n"
 		<<"После получения текста происходит подсчёт каждого слова в тексте\n"
 		<<"Программа выводит слова, кол-во повторений которых в тексте равняется числу, ранее введённым пользователем\n"
@@ -290,7 +307,7 @@ void fool_protected_cin(int& var) {
 	while (correct_flag)
 	{
 		cin >> var;
-		if (cin.fail())
+		if (cin.fail() || var <= 0)
 		{
 			cout << "Input Error: Ошибка ввода! Повторите ввод снова!\n";
 			cin.clear();
@@ -299,6 +316,24 @@ void fool_protected_cin(int& var) {
 		}
 		else { 
 			correct_flag = false; 
+		}
+	}
+}
+
+void fool_protected_getline(char *string, int size) {
+	bool correct_flag = true;
+	while (correct_flag)
+	{
+		cin.getline(string, size);
+		if (cin.fail())
+		{
+			cout << "Input Error: Ошибка ввода! Повторите ввод снова!\n";
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			correct_flag = true;
+		}
+		else {
+			correct_flag = false;
 		}
 	}
 }
@@ -313,9 +348,10 @@ void add_info_to_infile(char*, int nl, int ns, int nw) {
 	char* data = new char[size]{};
 	cout << "В конце ввода поставьте символ конца предложения(.?!)\n";
 	cin.ignore();
-	for (int i = 0; i < nl; i++) {
+	for (int i = 0; i < nl && _strcmpi(data, "exit"); i++) {
 		cout << "Введите " << i + 1 << "-ое предложение:\n";
-		cin.getline(data, (size_t)ns * nw);
+		cin.clear();
+		fool_protected_getline(data, ns * nw);
 		infile << data << "\n";
 	}
 	infile.close();
@@ -329,8 +365,10 @@ void fill_list_from_str(text_list* beg, char text[]) {
 	for (int i = 0; text[i]; i++) {
 		if (isalpha_modifed((unsigned char)text[i])) {
 			flag = false;
-			point->str[index] = text[i];
-			index++;
+			if (index < beg->size - 1) {
+				point->str[index] = text[i];
+				index++;
+			}
 		}
 		else if (!flag) {
 			beg = add_to_list(beg, get_length(beg));
@@ -341,7 +379,12 @@ void fill_list_from_str(text_list* beg, char text[]) {
 
 		}
 	}
-	point->str[index] = '\0';
+	if (strlen(point->str) <= 0) {
+		delete_last_element(beg);
+	}
+	else {
+		point->str[index] = '\0';
+	}
 }
 
 void add_info_to_outfile(text_list* beg, fstream& outfile, char *text) { // Функция добавления информации в выходной файл (эхо-печать)
@@ -386,32 +429,22 @@ void count_each_word(text_list* beg) { // Функция заносит кол-во повторений слов
 }
 
 void print_list(text_list* beg) { // Функция, выводящая список в консоль
+	print_splitter('-', 20);
 	text_list* point = beg;
 	cout << "Содержимое списка:\n";
-	while (point) {
-		if (point->count != 0) {
-			cout << point->str << " - " << point->count << endl; // Вывод слова и кол-ва его повторений
-		}
-		point = point->next;
+	if (get_length(beg) <= 1) { // Если список пуст, то записываем, что данных нет
+		cout << "Н/Д\n";
 	}
-}
-
-void find_element_by_index(text_list* beg, int index) {
-	text_list* point = beg;
-	int length = 0;
-	while (point) {
-		if (length != index) {
-			length++;
+	else {
+		while (point) {
+			if (point->count != 0) {
+				cout << point->str << " - " << point->count << endl; // Вывод слова и кол-ва его повторений
+			}
 			point = point->next;
-
-		}
-		else {
-			cout << "Ваш элемент: " << point->str << endl;
 		}
 	}
-	cout << "Find Error: Элемент не найден!\n";
+	print_splitter('-', 20);
 }
-
 
 int get_length(text_list* beg) { // Функция, возвращающая длинну списка
 	text_list* point = beg;
