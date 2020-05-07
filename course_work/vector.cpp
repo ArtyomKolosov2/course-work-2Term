@@ -9,6 +9,7 @@ enum menu_keys {
 	menu_do_main_task = 1,
 	menu_print_vector,
 	menu_math_operations,
+	menu_create_new_file,
 	menu_end_program
 };
 
@@ -36,13 +37,13 @@ template <class T> int find_index_element(T[], T, int);
 
 template <class T> T find_max(T[], int);
 
-template <class T, class V> double* sum_vectors(T[], V[], int);
+template <class T, class V> void sum_vectors(T[], V[], int);
 
-template <class T, class V> double* minus_vectors(T[], V[], int);
+template <class T, class V> void minus_vectors(T[], V[], int);
 
-template <class T, class V> double* divide_vectors(T[], V[], int);
+template <class T, class V> void divide_vectors(T[], V[], int);
 
-template <class T, class V> double* multiply_vectors(T[], V[], int);
+template <class T, class V> void multiply_vectors(T[], V[], int);
 
 template <class T> void fool_protected_cin(T&);
 
@@ -52,14 +53,19 @@ double rnd_num(int start = 1, int end = 100);
 
 void create_and_fill_file_auto(char*, int);
 
+void create_and_fill_file_auto(char*, double*, int);
+
 void create_and_fill_file(char*);
 
 void change_nums_to_zero(double*, int, int);
 
 void fool_protected_getline(char*, int);
 
+void initialize_new_vector(double[], int);
+
 int find_file_size(fstream&);
 
+bool sub_find(char* main_str, char* find_str);
 
 int main() {
 	system("chcp 1251 > nul");
@@ -71,11 +77,14 @@ int main() {
 	bool work_flag = true;
 	int file_size = 0;
 	int new_size = 0;
-	
+	char str[] = ".dat";
 	while (!infile.is_open()) {
 		int command = 0;
 		char path[100]{};
-		cout << "Выберите режим работы с файлом:\n";
+		cout << "Выберите режим работы с файлом:\n"
+			<< file_create_new << " - Создать файл и заполнить его вручную\n"
+			<< file_create_new_auto << " - Создать файл и запонить его автоматически\n"
+			<< file_existed << " - Использовать существующий файл с корректными данными\n";
 		fool_protected_cin(command);
 		switch (command)
 		{
@@ -90,12 +99,16 @@ int main() {
 			infile.open(path_double, ios::in | ios::binary);
 			break;
 		case file_existed:
-			cout << "Введите корректный путь к вашему файлу или exit для выхода:\n";
+			cout << "Введите корректный путь к вашему файлу (расширение .dat):\n";
 			cin.ignore();
 			fool_protected_getline(path, 100);
 			infile.open(path, ios::in | ios::binary);
 			if (!infile.is_open()) {
 				cout << "Path Error: Неправильный путь!\n";
+			}
+			else if (!sub_find(path, str)) {
+				cout << "Path Error: Неправильное расширение файла!\n";
+				infile.close();
 			}
 			break;
 		case file_end_program:
@@ -118,6 +131,15 @@ int main() {
 	infile.close();
 	while (work_flag) {
 		int command = 0;
+		unsigned int math_command = 0;
+		bool correct_path_flag = false;
+		char path[50];
+		cout << "Выберите комманду\n"
+			<< menu_do_main_task << " - Выполнить работу с вектором\n"
+			<< menu_print_vector << " - Вывести вектор\n"
+			<< menu_math_operations << " - Выполнить математическую операцию между векторами\n"
+			<< menu_create_new_file << " - Записать вектор в новый файл\n"
+			<< menu_end_program << " - Выйти из программы\n";
 		fool_protected_cin(command);
 		switch (command){
 
@@ -143,13 +165,45 @@ int main() {
 			break;
 
 		case menu_math_operations:
+			cout << math_sum << " - Сумма нового вектора\n";
+			fool_protected_cin(math_command);
+			if (math_command == math_sum) {
+				cout << "Введите размер нового вектора\n";
+				int size = 0;
+				fool_protected_cin(size);
+				double* new_vector = new double[size];
+				initialize_new_vector(new_vector, size);
+				int size_to_func = 0;
+				file_size < size ? size_to_func = file_size : size_to_func = size;
+				sum_vectors(vector, new_vector, size_to_func);
+				delete[] new_vector;
+			}
 			break;
 
 		case menu_end_program:
 			work_flag = false;
 			break;
-
+		case menu_create_new_file:
+			cout << "Введите название нового файла с расширением .dat\n";
+			while (!sub_find(path, str)) {
+				fool_protected_getline(path, 50);
+				correct_path_flag = true;
+				if (!_strcmpi(path, "exit")) {
+					correct_path_flag = false;
+					break;
+				}
+			}
+			if (correct_path_flag) {
+				cout << "Запись прошла успешно!\n";
+				create_and_fill_file_auto(path, vector, file_size);
+			}
+			else {
+				cout << "Запись вектора прервана!\n";
+			}
+			break;
+		
 		default:
+			cout << "Comand Error: Неизвестная команда!\n";
 			break;
 		}
 		
@@ -193,6 +247,28 @@ void create_and_fill_file_auto(char* path, int n) {
 	}
 	outfile.close();
 }
+
+void create_and_fill_file_auto(char* path, double* vector, int n) {
+	fstream outfile(path, ios::binary | ios::out);
+	if (outfile.is_open()) {
+		for (int i = 0; i < n; i++) {
+			outfile.write((char*)&vector[i], sizeof(double));
+		}
+		outfile.close();
+	}
+	else {
+		cout << "FileCreate Error: Не получилось создать файл!\n";
+	}
+}
+
+void initialize_new_vector(double new_vector[], int size) {
+	double num = 0;
+	for (int i = 0; i < size; i++) {
+		fool_protected_cin(num);
+		new_vector[i] = num;
+	}
+}
+
 void create_and_fill_file(char *path) {
 	cout << "Введите данные или exit для выхода:\n";
 	fstream outfile(path, ios::binary | ios::out);
@@ -209,11 +285,6 @@ void create_and_fill_file(char *path) {
 		}
 	}
 	outfile.close();
-}
-
-template <class T> void fill_vector_from_file(fstream& infile, T* vector) {
-	int i = 0;
-	while (!infile.read((char*)&vector[i], sizeof(T)).eof()) { i++; }
 }
 
 void change_nums_to_zero(double* vector, int index, int n) {
@@ -261,10 +332,6 @@ template <class T> void fill_vector (T vector[], int n, int start, int end) {
 	}
 }
 
-double rnd_num(int start, int end) {
-	return ((double)start + rand() % end) / ((double)1 + rand() % (end / 4));
-}
-
 template <class T> void print_vector(T vector[], int n, char sep){
 	for (int i = 0; i < n; i++) {
 		cout << fixed << setprecision(2) << vector[i] << sep;
@@ -282,36 +349,28 @@ template <class T> int find_index_element(T vector[], T element, int n) {
 	}
 	return result;
 }
-template <class T, class V> double*  sum_vectors(T first[], V second[], int n) {
-	double* sum = new double[n] {};
+template <class T, class V> void  sum_vectors(T first[], V second[], int n) {
 	for (int i = 0; i < n; i++) {
-		sum[i] = first[i] + second[i];
+		first[i] = first[i] + second[i];
 	}
-	return sum;
 }
 
 template <class T, class V> double* minus_vectors(T first[], V second[], int n) {
-	double* minus = new double[n] {};
 	for (int i = 0; i < n; i++) {
-		minus[i] = first[i] - second[i];
+		first[i] = first[i] - second[i];
 	}
-	return minus;
 }
 
 template <class T, class V> double* divide_vectors(T first[], V second[], int n) {
-	double* division = new double[n] {};
 	for (int i = 0; i < n; i++) {
-		division[i] = first[i] / second[i];
+		first[i] = first[i] / second[i];
 	}
-	return division;
 }
 
 template <class T, class V> double* multiply_vectors(T first[], V second[], int n) {
-	double* multi = new double[n] {};
 	for (int i = 0; i < n; i++) {
-		multi[i] = first[i] * second[i];
+		first[i] = first[i] * second[i];
 	}
-	return multi;
 }
 
 template <class T> T find_max(T vector[], int n) {
@@ -340,4 +399,32 @@ template <class T> void fool_protected_cin(T& var) {
 			correct_flag = false;
 		}
 	}
+}
+
+template <class T> void fill_vector_from_file(fstream& infile, T* vector) {
+	int i = 0;
+	while (!infile.read((char*)&vector[i], sizeof(T)).eof()) { i++; }
+}
+
+double rnd_num(int start, int end) {
+	return ((double)start + rand() % end) / ((double)1 + rand() % (end / 4));
+}
+
+bool sub_find(char* main_str, char* find_str) {
+	if (strlen(find_str) > strlen(main_str)) {
+		return false;
+	}
+	for (int i = 0; i <= strlen(main_str) - strlen(find_str); i++) {
+		char* save_str = new char[128]{};
+		for (int j = 0; j < strlen(find_str); j++) {
+			save_str[j] = main_str[i + j];
+		}
+
+		if (!strcmp(save_str, find_str)) {
+			return true;
+		}
+		delete[] save_str;
+	}
+
+	return false;
 }
