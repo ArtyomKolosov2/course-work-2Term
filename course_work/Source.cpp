@@ -56,9 +56,9 @@ void add_info_to_outfile(text_list*, fstream&);
 
 void add_info_to_infile(char*, int, int, int);
 
-void fool_protected_cin(int&);
+void protected_cin(int&);
 
-void fool_protected_getline(char*, int);
+void protected_getline(char*, int);
 
 int count_element_rep(text_list*, char*);
 
@@ -80,11 +80,11 @@ int main() {
 	bool work_flag = true;
 	
 	cout << "Введите кол-во предложений:\n";
-	fool_protected_cin(nl);
+	protected_cin(nl);
 	cout << "Введите кол-во слов в предложении:\n";
-	fool_protected_cin(ns);
+	protected_cin(ns);
 	cout << "Введите кол-во символов в слове:\n";
-	fool_protected_cin(nw);
+	protected_cin(nw);
 	
 	max_size = nl * ns * nw;
 	nw++;
@@ -99,14 +99,14 @@ int main() {
 			<< menu_show_inst << " - Вывести в консоль описание программы\n"
 			<< menu_end << " - Выйти из программы\n";
 
-		fool_protected_cin(command);
+		protected_cin(command);
 		switch (command) {
 		case menu_file_mod :
 			system("cls");
 			cout << "Выберите режим работы с файлом:\n"
 				 << open_exceded << " - Подготовленный файл\n"
 				 << open_new << " - Создать новый файл\n";
-			fool_protected_cin(command);
+			protected_cin(command);
 			if (command == open_exceded) {
 				char path[100]{};
 				infile.open(path, ios::in);
@@ -114,7 +114,7 @@ int main() {
 				while (!infile.is_open()) {
 					infile.close();
 					cout << "Введите корректный путь к вашему файлу или exit для выхода:\n";
-					fool_protected_getline(path, 100);
+					protected_getline(path, 100);
 					if (!_strcmpi(path, "exit")) {
 						break;
 					}
@@ -130,11 +130,11 @@ int main() {
 		case menu_change_main_nums:
 			system("cls");
 			cout << "Введите кол-во предложений:\n";
-			fool_protected_cin(nl);
+			protected_cin(nl);
 			cout << "Введите кол-во слов в предложении:\n";
-			fool_protected_cin(ns);
+			protected_cin(ns);
 			cout << "Введите кол-во символов в слове:\n";
-			fool_protected_cin(nw);
+			protected_cin(nw);
 			max_size = nl * ns * nw;
 			nw++;
 			cout << "Максимальное кол-во символов в тексте = " << max_size << endl;
@@ -302,7 +302,7 @@ void show_instruction() {
 	print_splitter('=', 100);
 }
 
-void fool_protected_cin(int& var) {
+void protected_cin(int& var) {
 	bool correct_flag = true;
 	while (correct_flag)
 	{
@@ -320,7 +320,7 @@ void fool_protected_cin(int& var) {
 	}
 }
 
-void fool_protected_getline(char *string, int size) {
+void protected_getline(char *string, int size) {
 	bool correct_flag = true;
 	while (correct_flag)
 	{
@@ -342,7 +342,7 @@ void add_info_to_infile(char*, int nl, int ns, int nw) {
 	fstream infile(path_in, ios::out);
 	int num = 0;
 	cout << "Введите искомое кол-во повторений слов:\n";
-	fool_protected_cin(num);
+	protected_cin(num);
 	infile << num << "\n";
 	int size = ns * nw;
 	char* data = new char[size]{};
@@ -351,7 +351,7 @@ void add_info_to_infile(char*, int nl, int ns, int nw) {
 	for (int i = 0; i < nl && _strcmpi(data, "exit"); i++) {
 		cout << "Введите " << i + 1 << "-ое предложение:\n";
 		cin.clear();
-		fool_protected_getline(data, ns * nw);
+		protected_getline(data, ns * nw);
 		infile << data << "\n";
 	}
 	infile.close();
