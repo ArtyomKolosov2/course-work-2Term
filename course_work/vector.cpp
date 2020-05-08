@@ -131,6 +131,7 @@ int main() {
 
 		case menu_show_instruction:
 			show_instruction();
+			break;
 
 		default:
 			cout << "Comand Error: Неверная команда\n";
@@ -323,9 +324,10 @@ void create_and_fill_file(char *path) {
 	cout << "Введите данные или exit для выхода:\n";
 	fstream outfile(path, ios::binary | ios::out);
 	bool work_flag = true;
-	char data[64];
+	const int size = 64;
+	char data[size];
 	while (work_flag) {
-		protected_getline(data, 64);
+		protected_getline(data, size);
 		if (atof(data)) {
 			double num = atof(data);
 			outfile.write((char*)&num, sizeof(double));
@@ -338,8 +340,8 @@ void create_and_fill_file(char *path) {
 }
 
 void change_nums_to_zero(double* vector, int index, int n) {
-	int i = 0;
-	for (i = index+1; i < n; i++) {
+	
+	for (int i = index+1; i < n; i++) {
 		vector[i] = 0;
 	}
 	for (int i = 0; i < n; i++) {
@@ -379,7 +381,9 @@ void print_splitter(char c, int n, bool flag) {
 }
 
 void show_instruction() {
-	print_splitter('=', 100);
+	char split = '=';
+	int wide = 100;
+	print_splitter(split, wide);
 	cout << "Добро пожаловать в программу VectorMath!\n"
 		<< "Программа разработана для работы с векторами.\n"
 		<< "Она поддерживает основные математичексие операции между векторами.\n"
@@ -390,7 +394,7 @@ void show_instruction() {
 		<< "Программа поддерживает бинарные файлы (файлы с данными).\n"
 		<< "Пользователь может создать при помощи программы новый бинарный файл\n"
 		<< "или же использовать уже готовый бинарный файл с расширением .dat\n";
-	print_splitter('=', 100);
+	print_splitter(split, wide);
 }
 
 int find_file_size(fstream& infile) {
