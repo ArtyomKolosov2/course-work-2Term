@@ -204,7 +204,8 @@ int main() {
 				<< math_sum << " - Сумма векторов\n"
 				<< math_minus << " - Разница векторов\n"
 				<< math_divide << " - Деление векторов\n"
-				<< math_multiply << " - Умножение векторов\n";
+				<< math_multiply << " - Умножение векторов\n"
+				<< math_exit << " - Прекратить операцию\n";
 			protected_cin(math_command);
 			switch (math_command){
 			case math_sum:
