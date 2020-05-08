@@ -73,7 +73,6 @@ void menu_math_func(void (*F)(double[], double[], int), double *, int);
 
 int find_file_size(fstream&);
 
-
 bool sub_find(char* main_str, char* find_str);
 
 int main() {
@@ -173,17 +172,18 @@ int main() {
 		switch (command){
 		case menu_do_main_task:
 			if (vector_exist) {
-				cout << "Do the thing\n";
+				cout << "Результат работы с вектором\n";
 				max = find_max(vector, vector_size);
 
 				max_index = find_index_element(vector, max, vector_size);
-
-				cout << "Старый вектор: ";
+				print_splitter('-', 100);
+				cout << "\nСтарый вектор: ";
 				print_vector(vector, vector_size);
 				change_nums_to_zero(vector, max_index, vector_size);
 				print_splitter('-', 100);
-				cout << "Новый вектор: ";
+				cout << "\nНовый вектор: ";
 				print_vector(vector, vector_size);
+				print_splitter('-', 100);
 			}
 			else {
 				cout << "Vector Error: Вектор не существует!\n";
@@ -191,7 +191,10 @@ int main() {
 			break;
 
 		case menu_print_vector:
+			print_splitter('=', 50);
+			cout << "Ваш вектор:\n";
 			print_vector(vector, vector_size);
+			print_splitter('=', 50);
 			break;
 
 		case menu_math_operations:
@@ -225,10 +228,11 @@ int main() {
 			break;
 
 		case menu_find_max:
-			cout << "Максимальный элемент вектора = " << find_max(vector, vector_size) << endl;
+			cout << "\nМаксимальный элемент вектора = " << find_max(vector, vector_size) << endl;
 			break;
 
 		case menu_create_new_file:
+			cin.ignore();
 			while (!sub_find(path, str)) {
 				cout << "Введите название нового файла с расширением .dat или exit для выхода:\n";
 				protected_getline(path, 50);
@@ -252,6 +256,7 @@ int main() {
 			break;
 
 		case menu_end_program:
+			cout << "До встречи!\n";
 			work_flag = false;
 			break;
 
@@ -261,6 +266,7 @@ int main() {
 		}
 	}
 	delete[] vector;
+	system("pause");
 	return 0;
 }
 
@@ -298,13 +304,19 @@ void initialize_new_vector(double new_vector[], int size) {
 void menu_math_func(void (*Func)(double[], double[], int), double* vector, int vector_size) {
 	cout << "Введите размер нового вектора\n";
 	int size = 0;
+	double* new_vector;
 	protected_cin(size);
-	double* new_vector = new double[size];
-	initialize_new_vector(new_vector, size);
-	int size_to_func = 0;
-	vector_size < size ? size_to_func = vector_size : size_to_func = size;
-	Func(vector, new_vector, size_to_func);
-	delete[] new_vector;
+	if (size > 0) {
+		new_vector = new double[size];
+		initialize_new_vector(new_vector, size);
+		int size_to_func = 0;
+		vector_size < size ? size_to_func = vector_size : size_to_func = size;
+		Func(vector, new_vector, size_to_func);
+		delete[] new_vector;
+	}
+	else {
+		cout << "Size Error: Неправильно введён размер!\n";
+	}
 }
 
 void create_and_fill_file(char *path) {
