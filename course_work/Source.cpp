@@ -303,8 +303,8 @@ void show_instruction() {
 }
 
 void protected_cin(int& var) {
-	bool correct_flag = true;
-	while (correct_flag)
+	bool incorrect_flag = true;
+	while (incorrect_flag)
 	{
 		cin >> var;
 		if (cin.fail() || var <= 0)
@@ -312,17 +312,17 @@ void protected_cin(int& var) {
 			cout << "Input Error: Ошибка ввода! Повторите ввод снова!\n";
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			correct_flag = true;
+			incorrect_flag = true;
 		}
 		else { 
-			correct_flag = false; 
+			incorrect_flag = false; 
 		}
 	}
 }
 
 void protected_getline(char *string, int size) {
-	bool correct_flag = true;
-	while (correct_flag)
+	bool incorrect_flag = true;
+	while (incorrect_flag)
 	{
 		cin.getline(string, size);
 		if (cin.fail())
@@ -330,10 +330,10 @@ void protected_getline(char *string, int size) {
 			cout << "Input Error: Ошибка ввода! Повторите ввод снова!\n";
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			correct_flag = true;
+			incorrect_flag = true;
 		}
 		else {
-			correct_flag = false;
+			incorrect_flag = false;
 		}
 	}
 }

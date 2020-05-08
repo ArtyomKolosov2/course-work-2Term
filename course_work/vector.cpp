@@ -19,7 +19,8 @@ enum menu_math_operations_keys {
 	math_sum = 1,
 	math_minus,
 	math_divide,
-	math_multiply
+	math_multiply,
+	math_exit
 };
 
 enum file_open_keys {
@@ -222,6 +223,10 @@ int main() {
 				menu_math_func(math_funcs[3], vector, vector_size);
 				break;
 
+			case math_exit:
+				cout << "Операция прервана!\n";
+				break;
+
 			default:
 				cout << "Comand Error: Неверная команда!\n";
 				break;
@@ -332,7 +337,10 @@ void create_and_fill_file(char *path) {
 			double num = atof(data);
 			outfile.write((char*)&num, sizeof(double));
 		}
-		else if (!_strcmpi(data, "exit")) {
+		else {
+			cout << "InputError: Ошибка ввода! Повторите ввод!\n";
+		}
+		if (!_strcmpi(data, "exit")) {
 			work_flag = false;
 		}
 	}
@@ -354,8 +362,8 @@ void change_nums_to_zero(double* vector, int index, int n) {
 }
 
 void protected_getline(char* string, int size) {
-	bool correct_flag = true;
-	while (correct_flag)
+	bool incorrect_flag = true;
+	while (incorrect_flag)
 	{
 		cin.getline(string, size);
 		if (cin.fail())
@@ -363,10 +371,10 @@ void protected_getline(char* string, int size) {
 			cout << "Input Error: Ошибка ввода! Повторите ввод снова!\n";
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			correct_flag = true;
+			incorrect_flag = true;
 		}
 		else {
-			correct_flag = false;
+			incorrect_flag = false;
 		}
 	}
 }
@@ -467,19 +475,18 @@ template <class T> T find_max(T vector[], int n) {
 }
 
 template <class T> void protected_cin(T& var) {
-	bool correct_flag = true;
-	while (correct_flag)
+	bool incorrect_flag = true;
+	while (incorrect_flag)
 	{
 		cin >> var;
-		if (cin.fail())
-		{
+		if (cin.fail()){
 			cout << "Input Error: Ошибка ввода! Повторите ввод снова!\n";
 			cin.clear();
 			cin.ignore(numeric_limits<streamsize>::max(), '\n');
-			correct_flag = true;
+			incorrect_flag = true;
 		}
 		else {
-			correct_flag = false;
+			incorrect_flag = false;
 		}
 	}
 }
