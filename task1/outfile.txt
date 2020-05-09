@@ -1,8 +1,26 @@
-Кол-во повторений слов:4
-fsd
+Кол-во повторений слов:2
+hellof e fsd
+fads sds f
+sd fsd fsd 
+dfs fsdg dhggfdghgfsdgfhdnhgrafsgndhrtwfgnhgrafxnhgrasdsdhgragdsngraxbggfdgxgnhrgasgghsghtsg
+dsf ds dfs fsd
 я
-fsd 1
-я 1
+hellof 1
+e 1
+fsd 4
+fads 1
+sds 1
+f 1
+sd 1
+fsd 4
+fsd 4
+dfs 2
+fsdg 1
+dhggfdghgfsdgfhdnhgrafsgn 1
+dsf 1
+ds 1
+dfs 2
+fsd 4
 
 Слова с повторением:
 Н/Д

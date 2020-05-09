@@ -147,9 +147,7 @@ int main() {
 				char* num = new char[nw];
 				infile.getline(num, nw);
 				int word_num = atoi(num) ? word_num = atoi(num) : word_num = 1;
-				cout << word_num << endl;
 				char* text = fill_string_from_file(infile, max_size);
-
 
 				fill_list_from_str(beg, text);
 
@@ -158,7 +156,7 @@ int main() {
 				print_list(beg);
 
 				text_list* beg_rep = list_with_repetation(beg, word_num);
-
+				cout << "Слова, кол-во повторений = " << word_num << endl;
 				print_list(beg_rep);
 
 				fstream outfile(path_out, ios::out);
@@ -203,12 +201,12 @@ char* fill_string_from_file(fstream& infile, int max_size) { // Функция чтения т
 	while (!infile.eof()) {
 		text[index] = infile.get();
 		if (ispunct_end(text[index])) { // Поиск символа прекращения чтения из файла (.!?)
-			text[index] = '\0'; // Добавляем нуль-символ в конец проч. строки
 			infile.clear();
 			break;
 		}
 		index++;
 	}
+	text[index] = '\0'; // Добавляем нуль-символ в конец проч. строки
 	infile.seekg(0, ios::beg);
 	return text; // Возврат строку с текстом из файла
 }
@@ -241,21 +239,21 @@ text_list* add_to_list(text_list* beg, int k) { // Функция добавления нового эле
 	return beg;
 }
 
-text_list* list_with_repetation(text_list* beg, int word_num) {
+text_list* list_with_repetation(text_list* beg, int word_num) { // Создание списка, в котором слова встречаются word_num раз
 	text_list *beg_rep = initialize_list_object(beg->size);
 	text_list* point = beg;
 	text_list* point_rep = beg_rep;
 	while (point) {
-		if (point->count == word_num && !find_list_element(beg_rep, point->str)) {
-			strcpy_s(point_rep->str, point->size, point->str);
+		if (point->count == word_num && !find_list_element(beg_rep, point->str)) { // Проверка кол-ва повторений и на повторение в списке beg_rep
+			strcpy_s(point_rep->str, point->size, point->str); // Копирование данных
 			point_rep->count = point->count;
 			point_rep->size = point->size;
-			beg_rep = add_to_list(beg_rep, get_length(beg_rep));
+			beg_rep = add_to_list(beg_rep, get_length(beg_rep)); // Добавление элемента в список
 			point_rep = point_rep->next;
 		}
 		point = point->next;
 	}
-	if (!point_rep->count) {
+	if (!point_rep->count) { // Удаление последнего элемента, если он был не задействован
 		beg_rep = delete_last_element(beg_rep);
 	}
 	return beg_rep;
@@ -276,12 +274,12 @@ text_list* delete_last_element(text_list* beg) { // Функция удаления последнего 
 	}
 	return beg;
 }
-void delete_element(text_list* beg) {
+void delete_element(text_list* beg) { // удаление элемента списка 
 	delete beg->str;
 	delete beg;
 }
 
-void print_splitter(char c, int n, bool flag) {
+void print_splitter(char c, int n, bool flag) { 
 	for (int i = 0; i < n; i++) {
 		cout << c;
 	}
@@ -302,7 +300,7 @@ void show_instruction() {
 	print_splitter('=', 100);
 }
 
-void protected_cin(int& var) {
+void protected_cin(int& var) { // cin с "защитой от дурака"
 	bool incorrect_flag = true;
 	while (incorrect_flag)
 	{
@@ -320,16 +318,16 @@ void protected_cin(int& var) {
 	}
 }
 
-void protected_getline(char *string, int size) {
+void protected_getline(char *string, int size) {// cin.getline с "защитой от дурака"
 	bool incorrect_flag = true;
 	while (incorrect_flag)
 	{
 		cin.getline(string, size);
-		if (cin.fail())
+		if (cin.fail()) // Проверка потока на ошибку
 		{
 			cout << "Input Error: Ошибка ввода! Повторите ввод снова!\n";
-			cin.clear();
-			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+			cin.clear(); // Отчистка потока от ошибок
+			cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Отчистка потока от лишних данных
 			incorrect_flag = true;
 		}
 		else {
@@ -338,7 +336,7 @@ void protected_getline(char *string, int size) {
 	}
 }
 
-void add_info_to_infile(char*, int nl, int ns, int nw) {
+void add_info_to_infile(char*, int nl, int ns, int nw) { // Функция ввода данных в файл
 	fstream infile(path_in, ios::out);
 	int num = 0;
 	cout << "Введите искомое кол-во повторений слов:\n";
@@ -347,43 +345,42 @@ void add_info_to_infile(char*, int nl, int ns, int nw) {
 	int size = ns * nw;
 	char* data = new char[size]{};
 	cout << "В конце ввода поставьте символ конца предложения(.?!)\n";
+	cout << "Для прекращения ввода введите exit\n";
 	cin.ignore();
 	for (int i = 0; i < nl && _strcmpi(data, "exit"); i++) {
 		cout << "Введите " << i + 1 << "-ое предложение:\n";
 		cin.clear();
 		protected_getline(data, ns * nw);
-		infile << data << "\n";
+		infile << data << "\n"; // Запись данных в файл
 	}
 	infile.close();
 	delete[] data;
 }
 
-void fill_list_from_str(text_list* beg, char text[]) {
+void fill_list_from_str(text_list* beg, char text[]) { // Заполнение списка данными из строки
 	text_list *point = beg;
 	bool flag = true;
 	int index = 0;
 	for (int i = 0; text[i]; i++) {
-		if (isalpha_modifed((unsigned char)text[i])) {
+		if (isalpha_modifed((unsigned char)text[i])) { // Проверка символа из строки на соответствие опред. символам
 			flag = false;
-			if (index < beg->size - 1) {
+			if (index < beg->size - 1) { // Защита от переполнения памяти
 				point->str[index] = text[i];
 				index++;
 			}
 		}
 		else if (!flag) {
-			beg = add_to_list(beg, get_length(beg));
+			beg = add_to_list(beg, get_length(beg)); // Добавление нового элемента в список
 			flag = true;
-			point->str[index] = '\0';
+			point->str[index] = '\0'; 
 			index = 0;
 			point = point->next;
 
 		}
 	}
-	if (strlen(point->str) <= 0) {
-		delete_last_element(beg);
-	}
-	else {
-		point->str[index] = '\0';
+	point->str[index] = '\0';
+	if (strlen(point->str) <= 0) { // Удаление последнего элемента, если он не задействован
+		beg = delete_last_element(beg);
 	}
 }
 
@@ -399,7 +396,7 @@ void add_info_to_outfile(text_list* beg, fstream& outfile, char *text) { // Функ
 void add_info_to_outfile(text_list* beg, fstream& outfile) { // Функция добавления информации в выходной файл (эхо-печать)
 	text_list* point = beg;
 	outfile << "\nСлова с повторением:\n";
-	if (get_length(beg) <= 1) { // Если список пуст, то записываем, что данных нет
+	if (get_length(beg) <= 1 && strlen(beg->str) <= 0) { // Если список пуст, то записываем, что данных нет
 		outfile << "Н/Д\n";
 	}
 	else {
@@ -432,7 +429,7 @@ void print_list(text_list* beg) { // Функция, выводящая список в консоль
 	print_splitter('-', 20);
 	text_list* point = beg;
 	cout << "Содержимое списка:\n";
-	if (get_length(beg) <= 1) { // Если список пуст, то записываем, что данных нет
+	if (get_length(beg) <= 1 && strlen(beg->str) <= 0) { // Если список пуст, то записываем, что данных нет
 		cout << "Н/Д\n";
 	}
 	else {
@@ -484,8 +481,8 @@ bool find_list_element(text_list* beg, char* str) { // Функция, возвращающая рез
 
 
 bool isalpha_modifed(char c) { // Модифицированная функция isalpha() работающая с русскими символами
-	return (c >= 'а' && c <= 'я') || (c >= 'А' && c <= 'Я')
-		|| c == 'ё' || c == 'Ё' || isalpha((unsigned char)c); 
+	return ((c >= 'а' && c <= 'я') || (c >= 'А' && c <= 'Я')
+		|| c == 'ё' || c == 'Ё' || isalpha((unsigned char)c)) && (c != EOF); 
 }
 
 bool ispunct_end(char c) { // Функция, сравнивает полученный символ с сиволами конца строки
