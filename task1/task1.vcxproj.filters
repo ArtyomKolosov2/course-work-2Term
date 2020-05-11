@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\course_work\Source.cpp">
+    <ClCompile Include="..\course_work\task_text.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>

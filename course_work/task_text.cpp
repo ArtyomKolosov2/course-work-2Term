@@ -92,8 +92,8 @@ int main() {
 	
 	max_size = nl * ns * nw;
 	nw++;
-	cout << "Максимальное кол-во символов в тексте = " << max_size << endl;
 	fstream infile; // Открытие файлового потока
+	cout << "Максимальное кол-во символов в тексте = " << max_size << endl;
 	while (work_flag) {
 		int command = 0;
 		cout << "Введите команду:\n"
@@ -152,8 +152,8 @@ int main() {
 
 		case menu_end:
 			work_flag = false;
-			cout << "До Встречи!\n";
 			infile.close();
+			cout << "До Встречи!\n";
 			break;
 
 		default:
