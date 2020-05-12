@@ -370,9 +370,6 @@ void create_and_fill_file(char *path) { // Создание бинарного файла и запись в н
 			double num = atof(data);
 			outfile.write((char*)&num, sizeof(double)); // Запись в файл
 		}
-		else {
-			cout << "InputError: Ошибка ввода! Повторите ввод!\n";
-		}
 		if (!_strcmpi(data, "exit")) {
 			work_flag = false;
 		}

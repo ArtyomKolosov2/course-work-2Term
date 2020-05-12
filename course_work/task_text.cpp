@@ -158,7 +158,7 @@ int main() {
 
 		default:
 			system("cls");
-			cout << "Command Error: Неизветсная комманда!\n";
+			cout << "Command Error: Неизвестная комманда!\n";
 			break;
 		}
 	}
@@ -503,8 +503,8 @@ bool find_list_element(text_list* beg, char* str) { // Функция, возвращающая рез
 
 
 bool isalpha_modifed(char c) { // Модифицированная функция isalpha() работающая с русскими символами
-	return ((c >= 'а' && c <= 'я') || (c >= 'А' && c <= 'Я')
-		|| c == 'ё' || c == 'Ё' || isalpha((unsigned char)c)) && (c != EOF); 
+	return (c >= 'а' && c <= 'я') || (c >= 'А' && c <= 'Я')
+		|| c == 'ё' || c == 'Ё' || isalpha((unsigned char)c); 
 }
 
 bool ispunct_end(char c) { // Функция, сравнивает полученный символ с сиволами конца строки

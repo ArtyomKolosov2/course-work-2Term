@@ -1,26 +1,30 @@
-Кол-во повторений слов:2
-hellof e fsd
-fads sds f
-sd fsd fsd 
-dfs fsdg dhggfdghgfsdgfhdnhgrafsgndhrtwfgnhgrafxnhgrasdsdhgragdsngraxbggfdgxgnhrgasgghsghtsg
-dsf ds dfs fsd
-я
-hellof 1
-e 1
-fsd 4
-fads 1
-sds 1
-f 1
-sd 1
-fsd 4
-fsd 4
-dfs 2
-fsdg 1
-dhggfdghgfsdgfhdnhgrafsgndhrtwfgnhgrafxnhgrasdsdhgragdsngraxbggfdgxgnhrgasgghsghtsg 1
-dsf 1
-ds 1
-dfs 2
-fsd 4
+Кол-во повторений слов:3
+Доброе утро сэр
+Как ваши дела
+У меня всё хорошо
+А у меня дела не очень хорошо
+Зато у меня отлично
+Добро 1
+утро 1
+сэр 1
+Как 1
+ваши 1
+дела 2
+У 1
+меня 3
+всё 1
+хорош 2
+А 1
+у 2
+меня 3
+дела 2
+не 1
+очень 1
+хорош 2
+Зато 1
+у 2
+меня 3
+отлич 1
 
 Слова с повторением:
-dfs 2
+меня 3
