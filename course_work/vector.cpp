@@ -35,7 +35,7 @@ char path_double[] = "number_double.dat"; // Путь к стандартному файлу
 
 template <class T> void print_vector(T[], int, char sep = ' '); // Объявление прототипов функций
 																// Использование шаблонов функций
-template <class T> int find_index_element(T[], T, int);
+template <class T> int find_index_of_element(T[], T, int);
 
 template <class T> T find_max(T[], int);
 
@@ -50,8 +50,6 @@ template <class T, class V> void multiply_vectors(T[], V[], int);
 template <class T> void protected_cin(T&);
 
 template <class T> void fill_vector_from_file(fstream&, T*);
-
-double rnd_num(int start = 1, int end = 100);
 
 void create_and_fill_file_auto(char*, int);
 
@@ -75,7 +73,13 @@ void create_new_file(double*, int);
 
 void open_existed_bin_file(fstream&);
 
+void do_main_task_func(double*, int);
+
+void math_operand_menu_func(double*, int);
+
 int find_file_size(fstream&);
+
+double rnd_num(int start = 1, int end = 100);
 
 bool sub_find(char* main_str, char* find_str);
 
@@ -121,36 +125,26 @@ int main() {
 
 		case file_end_program:
 			cout << "Программа завершена досрочно! До встречи!\n";
-			exit(1); // Выход из программы с кодом 1
+			exit(0); // Выход из программы с кодом 0
 			break;
 
 		default:
+			system("cls");
 			cout << "Comand Error: Неверная команда\n";
 			break;
 		}
 	}
 	cout << "Файл успешно открыт!\n";
 	vector_size = find_file_size(infile);
-	double* vector,
-			max = 0;
-	int max_index = 0,
-		i = 0;
+	double* vector;
+	int i = 0;
 	bool vector_exist = true;
-	vector = new double[vector_size]; // Создание вектора
+	vector = new double[vector_size] {}; // Создание вектора
 	fill_vector_from_file(infile, vector); 
 	infile.close();
 
-	void (*math_funcs[4])(double[], double[], int) // Инициализация массива указателей на функции
-	{
-			sum_vectors,
-			minus_vectors,
-			divide_vectors,
-			multiply_vectors,
-	};
-
 	while (work_flag) {
 		unsigned int command = 0;
-		unsigned int math_command = 0;
 		cout << "Выберите комманду\n"
 			<< menu_do_main_task << " - Выполнить работу с вектором\n"
 			<< menu_print_vector << " - Вывести вектор\n"
@@ -164,18 +158,7 @@ int main() {
 		case menu_do_main_task:
 			system("cls");
 			if (vector_exist) {
-				cout << "Результат работы с вектором\n";
-				max = find_max(vector, vector_size);
-
-				max_index = find_index_element(vector, max, vector_size);
-				print_splitter('-', 100);
-				cout << "\nСтарый вектор: ";
-				print_vector(vector, vector_size);
-				change_nums_to_zero(vector, max_index, vector_size);
-				print_splitter('-', 100);
-				cout << "\nНовый вектор: ";
-				print_vector(vector, vector_size);
-				print_splitter('-', 100);
+				do_main_task_func(vector, vector_size);
 			}
 			else {
 				cout << "Vector Error: Вектор не существует!\n";
@@ -192,38 +175,7 @@ int main() {
 
 		case menu_math_operations:
 			system("cls");
-			cout << "Выберите операцию\n"
-				<< math_sum << " - Сумма векторов(+)\n"
-				<< math_minus << " - Разница векторов(-)\n"
-				<< math_divide << " - Деление векторов(/)\n"
-				<< math_multiply << " - Умножение векторов(*)\n"
-				<< math_exit << " - Прекратить операцию\n";
-			protected_cin(math_command);
-			switch (math_command){
-			case math_sum:
-				menu_math_func(math_funcs[0], vector, vector_size);
-				break;
-
-			case math_minus:
-				menu_math_func(math_funcs[1], vector, vector_size);
-				break;
-
-			case math_divide:
-				menu_math_func(math_funcs[2], vector, vector_size);
-				break;
-
-			case math_multiply:
-				menu_math_func(math_funcs[3], vector, vector_size);
-				break;
-
-			case math_exit:
-				cout << "Операция прервана!\n";
-				break;
-
-			default:
-				cout << "Comand Error: Неверная команда!\n";
-				break;
-			}
+			math_operand_menu_func(vector, vector_size);
 			break;
 
 		case menu_find_max:
@@ -298,6 +250,7 @@ void menu_math_func(void (*Func)(double[], double[], int), double* vector, int v
 		new_vector = new double[size_to_func];
 		initialize_new_vector(new_vector, size_to_func);
 		Func(vector, new_vector, size_to_func);
+		cout << "Операция прошла успешно!\n";
 		delete[] new_vector;
 	}
 	else {
@@ -341,6 +294,67 @@ void open_existed_bin_file(fstream& infile){ // Открытие уже существующего бинар
 	else if (!sub_find(path, str)) { // Проверка на соответсвие расширению .dat
 		cout << "Path Error: Неправильное расширение файла!\n";
 		infile.close();
+	}
+}
+
+void do_main_task_func(double* vector, int vector_size){
+	int max_index = 0,
+		multiply = 7;
+	double max = 0;
+	cout << "Результат работы с вектором\n";
+	max = find_max(vector, vector_size);
+	max_index = find_index_of_element(vector, max, vector_size);
+	print_splitter('=', vector_size * multiply);
+	cout << "\nСтарый вектор: ";
+	print_vector(vector, vector_size);
+	change_nums_to_zero(vector, max_index, vector_size);
+	print_splitter('*', vector_size * multiply);
+	cout << "\nНовый вектор: ";
+	print_vector(vector, vector_size);
+	print_splitter('=', vector_size * multiply);
+}
+
+void math_operand_menu_func(double* vector, int vector_size){
+	unsigned int math_command = 0;
+	system("cls");
+	void (*math_funcs[4])(double[], double[], int) // Инициализация массива указателей на функции
+	{
+		sum_vectors,
+		minus_vectors,
+		divide_vectors,
+		multiply_vectors,
+	};
+	cout << "Выберите операцию\n"
+		<< math_sum << " - Сумма векторов(+)\n"
+		<< math_minus << " - Разница векторов(-)\n"
+		<< math_divide << " - Деление векторов(/)\n"
+		<< math_multiply << " - Умножение векторов(*)\n"
+		<< math_exit << " - Прекратить операцию\n";
+	protected_cin(math_command);
+	switch (math_command) {
+	case math_sum:
+		menu_math_func(math_funcs[0], vector, vector_size);
+		break;
+
+	case math_minus:
+		menu_math_func(math_funcs[1], vector, vector_size);
+		break;
+
+	case math_divide:
+		menu_math_func(math_funcs[2], vector, vector_size);
+		break;
+
+	case math_multiply:
+		menu_math_func(math_funcs[3], vector, vector_size);
+		break;
+
+	case math_exit:
+		cout << "Операция прервана!\n";
+		break;
+
+	default:
+		cout << "Comand Error: Неверная команда!\n";
+		break;
 	}
 }
 
@@ -409,7 +423,7 @@ void print_splitter(char c, int n, bool flag) { // Печать разделителя
 
 void show_instruction() { // Описание программы
 	char split = '=';
-	int wide = 100;
+	int wide = 90;
 	print_splitter(split, wide);
 	cout << "Добро пожаловать в программу VectorMath!\n"
 		<< "Программа разработана для работы с векторами.\n"
@@ -438,7 +452,7 @@ template <class T> void print_vector(T vector[], int n, char sep){ // Вывод вект
 	cout << "\n\n";
 }
 
-template <class T> int find_index_element(T vector[], T element, int n) { // Поиск индекса максимального элемента
+template <class T> int find_index_of_element(T vector[], T element, int n) { // Поиск индекса максимального элемента
 	int result = -1;
 	for (int i = 0; i < n; i++) {
 		if (vector[i] == element) {
@@ -516,12 +530,12 @@ double rnd_num(int start, int end) { // Создание случайного числа с типом double
 bool sub_find(char* main_str, char* find_str) { // Функция поиска подстроки в строке
 	bool result = false;
 	if (strlen(find_str) > strlen(main_str)) {
-		result = false;
+		return result;
 	}
 	for (int i = 0; i <= strlen(main_str) - strlen(find_str) && !result; i++) {
-		char* save_str = new char[128]{};
-		for (int j = 0; j < strlen(find_str); j++) {
-			save_str[j] = main_str[i + j]; // "Вырезаем" кусок строки, равный длинне искомой подстроки
+		char* save_str = new char[strlen(find_str)+1]{};
+		for (int j = 0; j < strlen(find_str); j++) {// "Вырезаем" кусок строки, равный длинне искомой подстроки
+			save_str[j] = main_str[i + j]; 
 		}
 
 		if (!strcmp(save_str, find_str)) {
