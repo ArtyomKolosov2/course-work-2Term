@@ -165,11 +165,16 @@ int main() {
 	return 0;
 }
 char* fill_string_from_file(fstream& infile, int max_size) { // Функция чтения текста из файла
+	max_size++;
 	char* text = new char[max_size]{};
 	int index = 0;
 	infile.clear();
 	infile.flush();
 	while (!infile.eof()) {
+		if (index >= max_size) {
+			index--;
+			break;
+		}
 		text[index] = infile.get();
 		if (ispunct_end(text[index])) { // Поиск символа прекращения чтения из файла (.!?)
 			infile.clear();
@@ -408,7 +413,7 @@ void fill_list_from_str(text_list* beg, char text[]) { // Заполнение списка данн
 
 void add_info_to_outfile(text_list* beg, fstream& outfile, char *text) { // Функция добавления информации в выходной файл (эхо-печать)
 	text_list* point = beg;
-	outfile << text << endl;
+	outfile << text <<'.'<<endl;
 	while (point) {
 		outfile << point->str << " " << point->count << endl;
 		point = point->next;
